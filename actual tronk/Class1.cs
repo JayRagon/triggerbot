@@ -18,7 +18,9 @@ namespace actual_tronk
     {
         AutoItX3 au3 = new AutoItX3();
 
-        private static int Threshold = 20;
+        private static int Threshold = 30;
+
+        private static bool Shot = false;
 
         private const UInt32 MOUSEEVENTF_LEFTDOWN = 0x0002;
         private const UInt32 MOUSEEVENTF_LEFTUP = 0x0004;
@@ -42,9 +44,10 @@ namespace actual_tronk
             {
                 if (GetAsyncKeyState(Keys.T) < 0)
                 {
+                    Shot = false;
                     SearchPixel();
                 }
-                while (GetAsyncKeyState(Keys.T) < 0)
+                while (Shot = false && GetAsyncKeyState(Keys.T) < 0)
                 {
                     Thread.Sleep(1);
                 }
@@ -79,6 +82,10 @@ namespace actual_tronk
 
                     bitmap.Dispose();
                     graphics.Dispose();
+
+                    Shot = true;
+
+                    Thread.Sleep(500);
                     return;
                 }
             }
