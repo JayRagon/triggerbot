@@ -1,23 +1,14 @@
 ﻿using System;
 using System.Drawing;
-using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Input;
-using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-using WindowsInput.Native;
-using WindowsInput;
-using WindowsInput.Events;
-using AutoItX3Lib;
+using System.Diagnostics;
 
 namespace actual_tronk
 {
     internal class MainClass
     {
-        AutoItX3 au3 = new AutoItX3();
-
         private static int Threshold = 30;
 
         private static bool Shot = false;
@@ -42,7 +33,7 @@ namespace actual_tronk
         {
             for (; ; )
             {
-                if (GetAsyncKeyState(Keys.T) < 0)
+                if (GetAsyncKeyState(Keys.T) < 0) // if t is down
                 {
                     Shot = false;
                     SearchPixel();
@@ -57,25 +48,38 @@ namespace actual_tronk
 
         private static void Click()
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+            stopwatch.Stop();
+
+            if (stopwatch.ElapsedTicks != 0)
+            {
+                Int64 elapsedTime = stopwatch.ElapsedTicks;
+                Console.WriteLine((float)elapsedTime / 10000);
+            }
+
             mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+
+            //mouse_event(0x02 | 0x04, 0, 0, 0, 0);
         }
 
         private static void SearchPixel()
         {
-            Bitmap bitmap = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+            //new bitmap
+            Bitmap bitmap = new Bitmap(1, 1);
             //create something that can capture the screen
             Graphics graphics = Graphics.FromImage(bitmap);
             //screenshot screen to graphics obj
-            graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
+            graphics.CopyFromScreen(Screen.PrimaryScreen.Bounds.Width / 2, Screen.PrimaryScreen.Bounds.Height / 2, 0, 0, new Size(1, 1), CopyPixelOperation.SourceCopy);
             //converts hex to a color obj
-            Color startingPixelColor = bitmap.GetPixel(Screen.PrimaryScreen.Bounds.Width / 2, Screen.PrimaryScreen.Bounds.Height / 2);
+            Color startingPixelColor = bitmap.GetPixel(0, 0); // saves starting pixel
 
             while (GetAsyncKeyState(Keys.T) < 0)
             {
-                graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
-                Color currentPixelColor = bitmap.GetPixel(Screen.PrimaryScreen.Bounds.Width / 2, Screen.PrimaryScreen.Bounds.Height / 2);
-                
+                graphics.CopyFromScreen(Screen.PrimaryScreen.Bounds.Width / 2, Screen.PrimaryScreen.Bounds.Height / 2, 0, 0, new Size(1, 1), CopyPixelOperation.SourceCopy);
+                Color currentPixelColor = bitmap.GetPixel(0, 0);
+
                 if (startingPixelColor.R > (currentPixelColor.R + Threshold) || startingPixelColor.R < (currentPixelColor.R - Threshold) || startingPixelColor.G > (currentPixelColor.G + Threshold) || startingPixelColor.G < (currentPixelColor.G - Threshold) || startingPixelColor.B > (currentPixelColor.B + Threshold) || startingPixelColor.B < (currentPixelColor.B - Threshold))
                 {
                     Click();
