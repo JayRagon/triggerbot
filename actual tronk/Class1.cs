@@ -48,17 +48,7 @@ namespace actual_tronk
 
         private static void Click()
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
             mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-            stopwatch.Stop();
-
-            if (stopwatch.ElapsedTicks != 0)
-            {
-                Int64 elapsedTime = stopwatch.ElapsedTicks;
-                Console.WriteLine((float)elapsedTime / 10000);
-            }
-
             mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
 
             //mouse_event(0x02 | 0x04, 0, 0, 0, 0);
